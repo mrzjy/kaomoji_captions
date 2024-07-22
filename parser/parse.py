@@ -1,4 +1,5 @@
 import os
+import re
 import traceback
 
 import requests
@@ -42,17 +43,47 @@ def parse_japaneseemoticons():
                 explanation = explanation.strip()
             except:
                 explanation = None
-            for kaomoji in table.find_all("td"):
-                if kaomoji.text.strip():
+
+            # table type 1
+            table_type = 1
+            for tr in table.find_all("tr"):
+                tds = tr.find_all("td")
+                if len(tds) == 2 and re.search("^[a-zA-Z ]+$", tds[0].text.strip()):
+                    table_type = 2
+                else:
+                    table_type = 1
+                break
+            if table_type == 1:
+                for kaomoji in table.find_all("td"):
+                    if kaomoji.text.strip():
+                        if "Movember 2014" in caption.text:
+                            print(kaomoji)
+                        captions.append(Caption(
+                            kaomoji=kaomoji.text.strip(),
+                            caption=caption.text.strip(),
+                            meta={
+                                "source": "https://japaneseemoticons.me",
+                                "lang": "en",
+                                "explanation": explanation
+                            }
+                        ))
+            else:
+                for tr in table.find_all("tr"):
+                    tds = tr.find_all("td")
+                    if len(tds) != 2:
+                        continue
+                    if "Movember 2014" in tds[1].text.strip():
+                        print(tds)
                     captions.append(Caption(
-                        kaomoji=kaomoji.text.strip(),
-                        caption=caption.text.strip(),
+                        kaomoji=tds[1].text.strip(),
+                        caption=tds[0].text.strip(),
                         meta={
                             "source": "https://japaneseemoticons.me",
                             "lang": "en",
                             "explanation": explanation
                         }
                     ))
+
     save_samples(captions, "../data/kaomoji_captions.jsonl", mode="a+")
 
 
