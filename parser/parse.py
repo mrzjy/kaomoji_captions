@@ -42,7 +42,7 @@ def parse_japaneseemoticons():
             try:
                 explanation = explanation.strip()
             except:
-                explanation = None
+                explanation = ""
 
             # table type 1
             table_type = 1
@@ -99,7 +99,7 @@ def parse_kaomoji_ru():
         try:
             explanation = explanation.text.strip()
         except:
-            explanation = None
+            explanation = ""
         if caption.text.strip() == "Special":
             for tr in table.find_all("tr"):
                 kaomoji = tr.find("td")
@@ -143,6 +143,7 @@ def parse_hehuan():
                 meta={
                     "source": "http://www.hehuan.co/yanwenzi",
                     "lang": "chs",
+                    "explanation": ""
                 }
             ))
     save_samples(captions, "../data/kaomoji_captions.jsonl", mode="a+")
@@ -163,6 +164,7 @@ def parse_lovelyemoji():
                 meta={
                     "source": "https://www.lovelyemoji.com/yanwenzi",
                     "lang": "chs",
+                    "explanation": ""
                 }
             ))
     save_samples(captions, "../data/kaomoji_captions.jsonl", mode="a+")
